@@ -1,10 +1,12 @@
 <template>
   <div>
     <breadcrumbs>
-      <template v-slot:model> Tutores </template>
-      <template v-slot:action> Editando Tutores </template>
+      <template v-slot:model> Rotas </template>
+      <template v-slot:action> Routes </template>
     </breadcrumbs>
-    <pre>{{ $route.params.id }}</pre>
+    <pre>
+      {{ $route.params.id }}
+    </pre>
   </div>
 </template>
 
