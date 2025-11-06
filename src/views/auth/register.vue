@@ -55,7 +55,7 @@
             <option value="UESPI">
               Universidade Estadual do Piauí (UESPI)
             </option>
-            <option value="UESPI">
+            <option value="UNIP">
               Universidade Paulista (UNIP)
             </option>
             <option value="IESVAP">

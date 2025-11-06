@@ -56,7 +56,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="bg-gray-100 rounded-xl shadow p-4 text-center">
-        <p class="text-3xl font-bold">16h</p>
+        <p class="text-3xl font-bold">{{ horarioSaida }}</p>
         <p class="text-gray-600">Horário de saída</p>
       </div>
     </div>
