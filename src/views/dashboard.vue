@@ -1,60 +1,64 @@
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import Localbase from 'localbase'
+
+const rotasAtivas = ref(0)
+const universitarios = ref(46) // exemplo fixo, pode puxar de outro banco
+const motoristas = ref(3) // podemos atualizar esse depois se quiser
+const horarioSaida = ref('16h')
+
+let db = new Localbase('db')
+
+async function atualizarRotas() {
+  const rotas = await db.collection('rotas').get()
+  rotasAtivas.value = rotas.length
+}
+
+onMounted(() => {
+  atualizarRotas()
+  window.addEventListener('rota-adicionada', atualizarRotas)
+  window.addEventListener('rota-removida', atualizarRotas)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('rota-adicionada', atualizarRotas)
+  window.removeEventListener('rota-removida', atualizarRotas)
+})
+</script>
+
 <template>
   <div class="p-6 space-y-6">
     <!-- Boas-vindas -->
     <div>
-      <h1 class="text-3xl font-bold">Olá, {{ nomeUsuario }}</h1>
+      <h1 class="text-3xl font-bold">Olá, Usuário</h1>
       <p class="text-gray-600">Bem-vindo ao painel do UniWay!</p>
       <p class="text-sm text-gray-500 mt-2">
-        {{ dataAtual }} • {{ horaAtual }}
+        {{ new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }} •
+        {{ new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) }}
       </p>
     </div>
 
-    <!-- Cards de resumo -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div
-        v-for="card in cards"
-        :key="card.titulo"
-        class="p-4 bg-base-200 rounded-2xl shadow-md border border-base-300"
-      >
-        <div class="text-xl font-bold">{{ card.valor }}</div>
-        <div class="text-gray-600">{{ card.titulo }}</div>
+    <!-- Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-gray-100 rounded-xl shadow p-4 text-center">
+        <p class="text-3xl font-bold">{{ rotasAtivas }}</p>
+        <p class="text-gray-600">Rotas ativas</p>
+      </div>
+
+      <div class="bg-gray-100 rounded-xl shadow p-4 text-center">
+        <p class="text-3xl font-bold">{{ universitarios }}</p>
+        <p class="text-gray-600">Universitários cadastrados</p>
+      </div>
+
+      <div class="bg-gray-100 rounded-xl shadow p-4 text-center">
+        <p class="text-3xl font-bold">{{ motoristas }}</p>
+        <p class="text-gray-600">Motoristas disponíveis</p>
+      </div>
+
+      <div class="bg-gray-100 rounded-xl shadow p-4 text-center">
+        <p class="text-3xl font-bold">16h</p>
+        <p class="text-gray-600">Horário de saída</p>
       </div>
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted } from "vue";
-
-const nomeUsuario = "Usuário"; // futuramente pode vir do login
-const dataAtual = ref("");
-const horaAtual = ref("");
-
-// Atualiza data e hora
-onMounted(() => {
-  const atualizarDataHora = () => {
-    const agora = new Date();
-    dataAtual.value = agora.toLocaleDateString("pt-BR", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-    horaAtual.value = agora.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  atualizarDataHora();
-  setInterval(atualizarDataHora, 1000);
-});
-
-// Cards de exemplo
-const cards = [
-  { titulo: "Rotas ativas", valor: 5 },
-  { titulo: "Universitários cadastrados", valor: 46 },
-  { titulo: "Motoristas disponíveis", valor: 3 },
-  { titulo: "Horário de saída", valor: "16h" },
-];
-</script>
