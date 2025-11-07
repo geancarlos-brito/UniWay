@@ -2,7 +2,9 @@
   <div class="min-h-screen bg-base-200 flex items-center justify-center">
     <div class="card w-96 bg-base-100 shadow-xl">
       <div class="card-body">
-        <h1 class="card-title text-center mb-4 text-2xl font-bold">UniWay Login</h1>
+        <h1 class="card-title text-center mb-4 text-2xl font-bold">
+          UniWay Login
+        </h1>
 
         <!-- Seleção de tipo de usuário -->
         <div class="flex justify-center mb-4 gap-2">
@@ -53,6 +55,9 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import Localbase from "localbase";
+
+let db = new Localbase("db");
 
 const router = useRouter();
 const email = ref("");
@@ -63,6 +68,10 @@ const tipoUsuario = ref("");
 const selecionarTipo = (tipo) => {
   tipoUsuario.value = tipo;
 };
+
+// Função para evitar erros ao consultar o banco de dados
+const normalizar = (str) =>
+  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 const login = async () => {
   if (email.value === "" || senha.value === "") {
@@ -75,15 +84,28 @@ const login = async () => {
     return;
   }
 
-  const usuario = {
-    nome: "Usuário de Teste",
-    email: email.value,
-    tipo: tipoUsuario.value.toLowerCase(),
-  };
+  try {
+    const usuarios = await db.collection("usuarios").get();
 
-  localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+    const usuarioEncontrado = usuarios.find(
+      (u) =>
+        u.email === email.value &&
+        u.senha === senha.value &&
+        normalizar(u.tipo) === normalizar(tipoUsuario.value)
+    );
 
-  alert(`Login realizado como ${tipoUsuario.value}!`);
-  router.push("/"); // redireciona pra Home (pode mudar depois se quiser)
+    if (!usuarioEncontrado) {
+      alert("E-mail, senha ou tipo de usuário incorretos!");
+      return;
+    }
+
+    localStorage.setItem("usuarioLogado", JSON.stringify(usuarioEncontrado));
+
+    alert(`Login realizado como ${tipoUsuario.value}!`);
+    router.push("/");
+  } catch (error) {
+    console.error("Erro ao acessar o banco:", error);
+    alert("Erro ao fazer login!");
+  }
 };
 </script>

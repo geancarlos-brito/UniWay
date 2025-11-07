@@ -30,6 +30,14 @@
           placeholder="Crie uma senha"
         />
 
+        <label class="label mt-2">Confirme sua senha</label>
+        <input
+          v-model="confirmarSenha"
+          type="password"
+          class="input input-bordered w-full"
+          placeholder="Confirme sua senha"
+        />
+
         <label class="label mt-2">Tipo de usuário</label>
         <select v-model="tipo" class="select select-bordered w-full">
           <option disabled value="">Selecione...</option>
@@ -49,15 +57,11 @@
             <option value="UFDPar">
               Universidade Federal do Delta do Parnaíba (UFDPar)
             </option>
-            <option value="UFPI">
-              Universidade Federal do Piauí (UFPI)
-            </option>
+            <option value="UFPI">Universidade Federal do Piauí (UFPI)</option>
             <option value="UESPI">
               Universidade Estadual do Piauí (UESPI)
             </option>
-            <option value="UNIP">
-              Universidade Paulista (UNIP)
-            </option>
+            <option value="UNIP">Universidade Paulista (UNIP)</option>
             <option value="IESVAP">
               AFYA Faculdade de Ciências Médicas (IESVAP)
             </option>
@@ -84,14 +88,24 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import Localbase from "localbase";
+
+let db = new Localbase("db"); // cria ou conecta ao banco de dados
 
 const router = useRouter();
 
 const nome = ref("");
 const email = ref("");
 const senha = ref("");
+const confirmarSenha = ref("");
 const tipo = ref("");
 const universidade = ref("");
+
+// Expressão regular para validar domínio de e-mail
+const emailValido = (email) => {
+  const dominiosPermitidos = ["@gmail.com", "@hotmail.com", "@outlook.com", "@yahoo.com"];
+  return dominiosPermitidos.some((dominio) => email.endsWith(dominio));
+};
 
 const registrar = async () => {
   if (!nome.value || !email.value || !senha.value || !tipo.value) {
@@ -99,7 +113,16 @@ const registrar = async () => {
     return;
   }
 
-  // Se for universitário, verifica se escolheu universidade
+  if (!emailValido(email.value)) {
+    alert("E-mail inválido!");
+    return;
+  }
+
+  if (senha.value !== confirmarSenha.value) {
+    alert("As senhas não coincidem!");
+    return;
+  }
+
   if (tipo.value === "universitario" && !universidade.value) {
     alert("Por favor, selecione sua universidade!");
     return;
@@ -114,11 +137,15 @@ const registrar = async () => {
     universidade: tipo.value === "universitario" ? universidade.value : null,
   };
 
-  const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
-  usuarios.push(novoUsuario);
-  localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-  alert("Usuário cadastrado com sucesso!");
-  router.push("/login");
+  // Salvando no banco de dados ("usuarios")
+  try {
+    await db.collection("usuarios").add(novoUsuario);
+    alert("Usuário cadastrado com sucesso!");
+    router.push("/login");
+  } catch (err) {
+    console.error("Erro ao salvar no IndexedDB:", err);
+    alert("Erro ao cadastrar usuário!");
+  }
 };
 </script>
+
