@@ -1,7 +1,7 @@
 <template>
   <div class="mx-3">
     <ul class="menu bg-base-200 rounded-box w-56">
-      <li><router-link :to="{ name: 'register'}">Registrar-se</router-link></li>
+      <li><router-link :to="{ name: 'register'}">Criar conta</router-link></li>
       <li><router-link :to="{ name: 'login'}">Fazer Login</router-link></li>
       <li><router-link :to="{ name: 'rotas.index'}">Lista de Rotas</router-link></li>
       <li><router-link :to="{ name: 'rotas.add'}">Adicionar Rota</router-link></li>

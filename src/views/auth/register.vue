@@ -2,9 +2,9 @@
   <div class="min-h-screen bg-base-200 flex items-center justify-center">
     <div class="card w-96 bg-base-100 shadow-xl">
       <div class="card-body">
-        <h2 class="card-title text-center mb-4 text-2xl font-bold">
+        <h1 class="card-title text-center mb-4 text-2xl font-bold">
           Criar Conta
-        </h2>
+        </h1>
 
         <label class="label">Nome completo</label>
         <input
@@ -14,7 +14,7 @@
           placeholder="Digite seu nome"
         />
 
-        <label class="label mt-2">Email</label>
+        <label class="label mt-2">E-mail</label>
         <input
           v-model="email"
           type="email"

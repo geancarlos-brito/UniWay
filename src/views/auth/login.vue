@@ -21,7 +21,7 @@
           </button>
         </div>
 
-        <label class="label">Email</label>
+        <label class="label">E-mail</label>
         <input
           v-model="email"
           type="email"
@@ -107,5 +107,5 @@ const login = async () => {
     console.error("Erro ao acessar o banco:", error);
     alert("Erro ao fazer login!");
   }
-};
+}
 </script>
