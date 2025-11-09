@@ -1,0 +1,137 @@
+import Localbase from "localbase";
+
+class DBService {
+  constructor(dbName = "uniway-db") {
+    this.db = new Localbase(dbName);
+  }
+
+  // === MÉTODOS GENÉRICOS ===
+
+  // Adiciona novo item sem sobrescrever os anteriores
+  async adicionar(colecao, dados) {
+    try {
+      const id = Date.now(); // ID único baseado no timestamp
+      await this.db.collection(colecao).add({ id, ...dados });
+      console.log(`Item adicionado em ${colecao}:`, dados);
+      return true;
+    } catch (error) {
+      console.error("Erro ao adicionar:", error);
+      return false;
+    }
+  }
+
+  // Lista todos os registros de uma coleção
+  async listar(colecao) {
+    try {
+      return await this.db.collection(colecao).get();
+    } catch (error) {
+      console.error("Erro ao listar:", error);
+      return [];
+    }
+  }
+
+  // Busca um item específico com base em um campo e valor
+  async buscar(colecao, campo, valor) {
+    try {
+      const resultados = await this.db.collection(colecao).get();
+      const encontrado = resultados.find(item => item[campo] === valor);
+      return encontrado || null;
+    } catch (error) {
+      console.error("Erro ao buscar:", error);
+      return null;
+    }
+  }
+
+  // Atualiza um item específico
+  async atualizar(colecao, campo, valor, novosDados) {
+    try {
+      const resultados = await this.db.collection(colecao).get();
+      const registro = resultados.find(item => item[campo] === valor);
+
+      if (!registro) {
+        console.warn("Registro não encontrado para atualização");
+        return false;
+      }
+
+      await this.db
+        .collection(colecao)
+        .doc({ id: registro.id })
+        .update(novosDados);
+
+      console.log(`Registro atualizado em ${colecao}:`, novosDados);
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar:", error);
+      return false;
+    }
+  }
+
+  // Remove um item específico
+  async remover(colecao, campo, valor) {
+    try {
+      const resultados = await this.db.collection(colecao).get();
+      const registro = resultados.find(item => item[campo] === valor);
+
+      if (!registro) {
+        console.warn("Registro não encontrado para exclusão");
+        return false;
+      }
+
+      await this.db.collection(colecao).doc({ id: registro.id }).delete();
+
+      console.log(`Registro removido de ${colecao}: ${campo}=${valor}`);
+      return true;
+    } catch (error) {
+      console.error("Erro ao remover:", error);
+      return false;
+    }
+  }
+
+  // Limpa toda a coleção (útil pra testes)
+  async limparColecao(colecao) {
+    try {
+      await this.db.collection(colecao).delete();
+      console.log(`Coleção ${colecao} limpa com sucesso`);
+      return true;
+    } catch (error) {
+      console.error("Erro ao limpar a coleção:", error);
+      return false;
+    }
+  }
+
+  // === MÉTODOS ESPECÍFICOS PARA ROTAS ===
+
+  async adicionarRota(rota) {
+    try {
+      const id = Date.now();
+      await this.db.collection("rotas").add({ id, ...rota });
+      console.log("Rota adicionada:", rota);
+      return true;
+    } catch (error) {
+      console.error("Erro ao adicionar rota:", error);
+      return false;
+    }
+  }
+
+  async listarRotas() {
+    try {
+      return await this.db.collection("rotas").get();
+    } catch (error) {
+      console.error("Erro ao listar rotas:", error);
+      return [];
+    }
+  }
+
+  async excluirTodasRotas() {
+    try {
+      await this.db.collection("rotas").delete();
+      console.log("Todas as rotas foram removidas com sucesso.");
+      return true;
+    } catch (error) {
+      console.error("Erro ao excluir todas as rotas:", error);
+      return false;
+    }
+  }
+}
+
+export default new DBService("uniway-db");

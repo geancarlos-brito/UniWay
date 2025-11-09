@@ -7,78 +7,45 @@
         </h1>
 
         <label class="label">Nome completo</label>
-        <input
-          v-model="nome"
-          type="text"
-          class="input input-bordered w-full"
-          placeholder="Digite seu nome"
-        />
+        <input v-model="nome" type="text" class="input input-bordered w-full" placeholder="Digite seu nome" />
 
         <label class="label mt-2">E-mail</label>
-        <input
-          v-model="email"
-          type="email"
-          class="input input-bordered w-full"
-          placeholder="Digite seu email"
-        />
+        <input v-model="email" type="email" class="input input-bordered w-full" placeholder="Digite seu email" />
 
         <label class="label mt-2">Senha</label>
-        <input
-          v-model="senha"
-          type="password"
-          class="input input-bordered w-full"
-          placeholder="Crie uma senha"
-        />
+        <input v-model="senha" type="password" class="input input-bordered w-full" placeholder="Crie uma senha" />
 
         <label class="label mt-2">Confirme sua senha</label>
-        <input
-          v-model="confirmarSenha"
-          type="password"
-          class="input input-bordered w-full"
-          placeholder="Confirme sua senha"
-        />
+        <input v-model="confirmarSenha" type="password" class="input input-bordered w-full" placeholder="Confirme sua senha" />
 
         <label class="label mt-2">Tipo de usuário</label>
         <select v-model="tipo" class="select select-bordered w-full">
           <option disabled value="">Selecione...</option>
-          <option value="universitario">Universitário</option>
-          <option value="motorista">Motorista</option>
-          <option value="administrador">Administrador</option>
+          <option value="Universitário">Universitário</option>
+          <option value="Motorista">Motorista</option>
+          <option value="Administrador">Administrador</option>
         </select>
 
-        <!-- Campo condicional: universitário -->
-        <div v-if="tipo === 'universitario'" class="mt-2">
+        <div v-if="tipo === 'Universitário'" class="mt-2">
           <label class="label">Universidade</label>
           <select v-model="universidade" class="select select-bordered w-full">
             <option disabled value="">Selecione sua universidade...</option>
-            <option value="UNINASSAU">
-              Centro Universitário Maurício de Nassau (UNINASSAU)
-            </option>
-            <option value="UFDPar">
-              Universidade Federal do Delta do Parnaíba (UFDPar)
-            </option>
+            <option value="UNINASSAU">Centro Universitário Maurício de Nassau (UNINASSAU)</option>
+            <option value="UFDPar">Universidade Federal do Delta do Parnaíba (UFDPar)</option>
             <option value="UFPI">Universidade Federal do Piauí (UFPI)</option>
-            <option value="UESPI">
-              Universidade Estadual do Piauí (UESPI)
-            </option>
+            <option value="UESPI">Universidade Estadual do Piauí (UESPI)</option>
             <option value="UNIP">Universidade Paulista (UNIP)</option>
-            <option value="IESVAP">
-              AFYA Faculdade de Ciências Médicas (IESVAP)
-            </option>
+            <option value="IESVAP">AFYA Faculdade de Ciências Médicas (IESVAP)</option>
           </select>
         </div>
 
         <div class="mt-4">
-          <button class="btn btn-warning w-full font-bold" @click="registrar">
-            Registrar
-          </button>
+          <button class="btn btn-warning w-full font-bold" @click="registrar">Registrar</button>
         </div>
 
         <p class="text-sm text-center mt-4 text-gray-500">
           Já tem uma conta?
-          <RouterLink to="/login" class="link link-hover text-black">
-            Fazer login
-          </RouterLink>
+          <RouterLink to="/login" class="link link-hover text-black">Fazer login</RouterLink>
         </p>
       </div>
     </div>
@@ -88,12 +55,9 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import Localbase from "localbase";
-
-let db = new Localbase("db"); // cria ou conecta ao banco de dados
+import DBService from "@/services/DBService.js";
 
 const router = useRouter();
-
 const nome = ref("");
 const email = ref("");
 const senha = ref("");
@@ -101,7 +65,6 @@ const confirmarSenha = ref("");
 const tipo = ref("");
 const universidade = ref("");
 
-// Expressão regular para validar domínio de e-mail
 const emailValido = (email) => {
   const dominiosPermitidos = ["@gmail.com", "@hotmail.com", "@outlook.com", "@yahoo.com"];
   return dominiosPermitidos.some((dominio) => email.endsWith(dominio));
@@ -123,29 +86,33 @@ const registrar = async () => {
     return;
   }
 
-  if (tipo.value === "universitario" && !universidade.value) {
+  if (tipo.value === "Universitário" && !universidade.value) {
     alert("Por favor, selecione sua universidade!");
     return;
   }
 
+  // Evita duplicação
+  const usuarios = await DBService.listar("usuarios");
+  const emailExistente = usuarios.find((u) => u.email === email.value);
+  if (emailExistente) {
+    alert("E-mail já cadastrado!");
+    return;
+  }
+
   const novoUsuario = {
-    id: Date.now(),
     nome: nome.value,
     email: email.value,
     senha: senha.value,
     tipo: tipo.value,
-    universidade: tipo.value === "universitario" ? universidade.value : null,
+    universidade: tipo.value === "Universitário" ? universidade.value : null,
   };
 
-  // Salvando no banco de dados ("usuarios")
-  try {
-    await db.collection("usuarios").add(novoUsuario);
+  const sucesso = await DBService.adicionar("usuarios", novoUsuario);
+  if (sucesso) {
     alert("Usuário cadastrado com sucesso!");
     router.push("/login");
-  } catch (err) {
-    console.error("Erro ao salvar no IndexedDB:", err);
+  } else {
     alert("Erro ao cadastrar usuário!");
   }
 };
 </script>
-

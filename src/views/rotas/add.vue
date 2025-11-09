@@ -54,13 +54,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
-import Localbase from "localbase";
+import DBService from "@/services/DBService";
 
 const router = useRouter();
-let db = new Localbase("db");
-
 const toastVisible = ref(false);
 
 const form = reactive({
@@ -72,17 +70,13 @@ const form = reactive({
 
 const adicionarRota = async () => {
   try {
-    await db.collection("rotas").add({
-      motorista: form.motorista,
-      universidade: form.universidade,
-      onibus: form.onibus,
-      vagas: form.vagas,
-    });
+    // Usa o serviço centralizado
+    await DBService.adicionarRota({ ...form });
 
     toastVisible.value = true;
     console.log("✅ Rota adicionada com sucesso!");
 
-    // Redireciona pra lista de rotas após salvar
+    // Redireciona após adicionar
     setTimeout(() => {
       router.push("/rotas");
     }, 1000);
@@ -90,11 +84,10 @@ const adicionarRota = async () => {
     // Limpa o formulário
     Object.keys(form).forEach((key) => (form[key] = ""));
   } catch (error) {
-    console.error("❌ Erro ao adicionar rota:", error);
+    console.error("Erro ao adicionar rota:", error);
+    alert("Erro ao adicionar rota!");
   }
 };
 </script>
 
-
-
-<style lang="scss" scoped></style>
+<style scoped></style>

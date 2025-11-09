@@ -5,7 +5,6 @@
       <template v-slot:action> Lista de Rotas </template>
     </breadcrumbs>
   </div>
-  
 
   <div class="card w-full bg-base-100 shadow-sm card-border">
     <div class="card-body">
@@ -15,17 +14,15 @@
 
           <div class="flex gap-2">
             <button
-            class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none"
-            @click="excluirTodas"
-          >
-            Excluir Rotas
-          </button>
-
+              class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none"
+              @click="excluirTodas"
+            >
+              Excluir Rotas
+            </button>
           </div>
         </div>
 
         <table class="table">
-          <!-- Cabeçalho -->
           <thead>
             <tr>
               <th></th>
@@ -37,7 +34,6 @@
             </tr>
           </thead>
 
-          <!-- Linhas -->
           <tbody>
             <tr v-for="rota in rotas" :key="rota.id">
               <th>
@@ -46,7 +42,6 @@
                 </label>
               </th>
 
-              <!-- Foto (avatar) -->
               <td>
                 <div class="avatar">
                   <div class="mask mask-squircle h-12 w-12">
@@ -58,11 +53,16 @@
                 </div>
               </td>
 
-              <!-- Dados -->
               <td class="font-bold">{{ rota.motorista }}</td>
               <td>{{ rota.universidade }}</td>
               <td>{{ rota.onibus }}</td>
               <td>{{ rota.vagas }}</td>
+
+              <!-- 🟡 Botão de Editar -->
+              <td>
+                <button
+                  class="btn btn-sm btn-neutral" @click="editarRota(rota.id)">Editar</button>
+              </td>
             </tr>
 
             <tr v-if="rotas.length === 0">
@@ -72,7 +72,6 @@
             </tr>
           </tbody>
         </table>
-
       </div>
     </div>
   </div>
@@ -82,26 +81,31 @@
 import breadcrumbs from "@/components/breadcrumbs.vue";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import Localbase from "localbase";
+import DBService from "@/services/DBService";
 
-const router = useRouter();
+const router = useRouter(); // ✅ adiciona o roteador
 const rotas = ref([]);
-let db = new Localbase("db");
-
-onMounted(async () => {
-  await capturarRotas();
-});
 
 const capturarRotas = async () => {
-  rotas.value = await db.collection("rotas").get();
+  rotas.value = await DBService.listar("rotas");
 };
+
 const excluirTodas = async () => {
   if (confirm("Tem certeza que deseja excluir todas as rotas?")) {
-    await db.collection("rotas").delete();
+    await DBService.limparColecao("rotas");
     rotas.value = [];
     console.log("✅ Todas as rotas foram removidas.");
   }
 };
+
+const editarRota = (id) => {
+  router.push(`/rotas/${id}/edit`);
+};
+
+onMounted(() => {
+  capturarRotas();
+});
+
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>
