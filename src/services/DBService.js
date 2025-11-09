@@ -5,9 +5,9 @@ class DBService {
     this.db = new Localbase(dbName);
   }
 
-  // === MÉTODOS GENÉRICOS ===
+  // === MÉTODOS DO USUÁRIO ===
 
-  // Adiciona novo item sem sobrescrever os anteriores
+  // Adiciona novo novo usuário
   async adicionar(colecao, dados) {
     try {
       const id = Date.now(); // ID único baseado no timestamp
@@ -20,7 +20,7 @@ class DBService {
     }
   }
 
-  // Lista todos os registros de uma coleção
+  // Lista todos os usuários registrados
   async listar(colecao) {
     try {
       return await this.db.collection(colecao).get();
@@ -30,7 +30,7 @@ class DBService {
     }
   }
 
-  // Busca um item específico com base em um campo e valor
+  // Busca um um usuário com base em um campo e valor
   async buscar(colecao, campo, valor) {
     try {
       const resultados = await this.db.collection(colecao).get();
@@ -42,7 +42,7 @@ class DBService {
     }
   }
 
-  // Atualiza um item específico
+  // Atualiza usuário específico
   async atualizar(colecao, campo, valor, novosDados) {
     try {
       const resultados = await this.db.collection(colecao).get();
@@ -66,7 +66,7 @@ class DBService {
     }
   }
 
-  // Remove um item específico
+  // Remove usuário
   async remover(colecao, campo, valor) {
     try {
       const resultados = await this.db.collection(colecao).get();
@@ -99,13 +99,16 @@ class DBService {
     }
   }
 
-  // === MÉTODOS ESPECÍFICOS PARA ROTAS ===
+  // === MÉTODOS PARA ROTAS ===
 
   async adicionarRota(rota) {
     try {
       const id = Date.now();
       await this.db.collection("rotas").add({ id, ...rota });
       console.log("Rota adicionada:", rota);
+
+      window.dispatchEvent(new Event("rota-adicionada"));
+
       return true;
     } catch (error) {
       console.error("Erro ao adicionar rota:", error);
@@ -126,6 +129,9 @@ class DBService {
     try {
       await this.db.collection("rotas").delete();
       console.log("Todas as rotas foram removidas com sucesso.");
+
+      window.dispatchEvent(new Event("rota-removida"));
+      
       return true;
     } catch (error) {
       console.error("Erro ao excluir todas as rotas:", error);

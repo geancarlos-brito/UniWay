@@ -38,6 +38,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import DBService from "@/services/DBService.js";
+import { login as loginAuth } from "@/services/AuthService.js";
 
 const router = useRouter();
 const email = ref("");
@@ -65,7 +66,7 @@ const login = async () => {
       return;
     }
 
-    localStorage.setItem("usuarioLogado", JSON.stringify(usuarioEncontrado));
+    loginAuth(usuarioEncontrado);
     alert(`Login realizado com sucesso como ${tipoUsuario.value}!`);
     router.push("/");
   } catch (error) {

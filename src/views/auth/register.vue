@@ -30,12 +30,12 @@
           <label class="label">Universidade</label>
           <select v-model="universidade" class="select select-bordered w-full">
             <option disabled value="">Selecione sua universidade...</option>
-            <option value="UNINASSAU">Centro Universitário Maurício de Nassau (UNINASSAU)</option>
-            <option value="UFDPar">Universidade Federal do Delta do Parnaíba (UFDPar)</option>
-            <option value="UFPI">Universidade Federal do Piauí (UFPI)</option>
-            <option value="UESPI">Universidade Estadual do Piauí (UESPI)</option>
-            <option value="UNIP">Universidade Paulista (UNIP)</option>
-            <option value="IESVAP">AFYA Faculdade de Ciências Médicas (IESVAP)</option>
+            <option value="UNINASSAU">UNINASSAU</option>
+            <option value="UFDPar">UFDPar</option>
+            <option value="UFPI">UFPI</option>
+            <option value="UESPI">UESPI</option>
+            <option value="UNIP">UNIP</option>
+            <option value="IESVAP">IESVAP</option>
           </select>
         </div>
 
@@ -56,6 +56,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import DBService from "@/services/DBService.js";
+import { login as loginAuth } from "@/services/AuthService.js";
 
 const router = useRouter();
 const nome = ref("");
@@ -109,8 +110,9 @@ const registrar = async () => {
 
   const sucesso = await DBService.adicionar("usuarios", novoUsuario);
   if (sucesso) {
+    loginAuth(novoUsuario);
     alert("Usuário cadastrado com sucesso!");
-    router.push("/login");
+    router.push("/");
   } else {
     alert("Erro ao cadastrar usuário!");
   }

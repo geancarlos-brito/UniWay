@@ -12,7 +12,8 @@
         <div class="flex justify-between items-center mb-5">
           <div class="text-2xl font-semibold">Rotas Universitárias</div>
 
-          <div class="flex gap-2">
+          <!-- Botão Excluir só para administrador -->
+          <div class="flex gap-2" v-if="tipoUsuario === 'Administrador'">
             <button
               class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none"
               @click="excluirTodas"
@@ -25,20 +26,29 @@
         <table class="table">
           <thead>
             <tr>
-              <th></th>
+              <th v-if="tipoUsuario === 'Universitário'"></th>
               <th>Foto</th>
               <th>Motorista</th>
               <th>Universidade</th>
               <th>Ônibus</th>
               <th>Vagas</th>
+              <th v-if="tipoUsuario === 'Administrador'">Ações</th>
             </tr>
           </thead>
 
           <tbody>
             <tr v-for="rota in rotas" :key="rota.id">
-              <th>
+              <!-- Checkbox só para universitário -->
+              <th v-if="tipoUsuario === 'Universitário'">
                 <label>
-                  <input type="checkbox" class="checkbox" />
+                  <input 
+                    type="checkbox" 
+                    class="checkbox" 
+                    :checked="rota.inscritos?.includes(usuarioId)"
+                    @change="(e) => selecionarRota(rota, e.target.checked)"
+                    :disabled="rota.vagas === 0 && !rota.inscritos?.includes(usuarioId)"
+                    :title="rota.vagas === 0 ? 'Vagas esgotadas' : ''"
+                  />
                 </label>
               </th>
 
@@ -56,17 +66,20 @@
               <td class="font-bold">{{ rota.motorista }}</td>
               <td>{{ rota.universidade }}</td>
               <td>{{ rota.onibus }}</td>
-              <td>{{ rota.vagas }}</td>
-
-              <!-- 🟡 Botão de Editar -->
               <td>
-                <button
-                  class="btn btn-sm btn-neutral" @click="editarRota(rota.id)">Editar</button>
+                <span :class="rota.vagas === 0 ? 'text-red-600 font-bold' : ''">
+                  {{ rota.vagas === 0 ? 'Esgotado' : rota.vagas }}
+                </span>
+              </td>
+
+              <!-- Botão Editar só para administrador -->
+              <td v-if="tipoUsuario === 'Administrador'">
+                <button class="btn btn-sm btn-neutral" @click="editarRota(rota.id)">Editar</button>
               </td>
             </tr>
 
             <tr v-if="rotas.length === 0">
-              <td colspan="6" class="text-center text-gray-500 py-4">
+              <td :colspan="tipoUsuario === 'Administrador' ? 7 : 6" class="text-center text-gray-500 py-4">
                 Nenhuma rota cadastrada ainda
               </td>
             </tr>
@@ -83,13 +96,20 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import DBService from "@/services/DBService";
 
-const router = useRouter(); // ✅ adiciona o roteador
+const router = useRouter();
 const rotas = ref([]);
 
+// Usuário logado
+const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
+const usuarioId = usuarioLogado?.id;
+const tipoUsuario = usuarioLogado?.tipo;
+
+// Captura todas as rotas
 const capturarRotas = async () => {
   rotas.value = await DBService.listar("rotas");
 };
 
+// Excluir todas as rotas (só administrador)
 const excluirTodas = async () => {
   if (confirm("Tem certeza que deseja excluir todas as rotas?")) {
     await DBService.limparColecao("rotas");
@@ -98,14 +118,40 @@ const excluirTodas = async () => {
   }
 };
 
+// Editar rota (só administrador)
 const editarRota = (id) => {
   router.push(`/rotas/${id}/edit`);
+};
+
+// Seleção automática de rota (só universitário)
+const selecionarRota = async (rota, checked) => {
+  if (tipoUsuario !== 'Universitário') return;
+
+  if (checked) {
+    if (rota.vagas > 0) {
+      if (!rota.inscritos) rota.inscritos = [];
+      if (!rota.inscritos.includes(usuarioId)) {
+        rota.inscritos.push(usuarioId);
+        rota.vagas -= 1;
+        await DBService.atualizar("rotas", "id", rota.id, rota);
+        console.log(`Rota selecionada! Restam ${rota.vagas} vagas.`);
+      }
+    } else {
+      alert("⚠️ Não há vagas disponíveis nesta rota!");
+    }
+  } else {
+    if (rota.inscritos?.includes(usuarioId)) {
+      rota.inscritos = rota.inscritos.filter(id => id !== usuarioId);
+      rota.vagas += 1;
+      await DBService.atualizar("rotas", "id", rota.id, rota);
+      console.log(`Rota desmarcada! Restam ${rota.vagas} vagas.`);
+    }
+  }
 };
 
 onMounted(() => {
   capturarRotas();
 });
-
 </script>
 
 <style scoped></style>

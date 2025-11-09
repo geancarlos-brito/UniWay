@@ -3,11 +3,12 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Localbase from 'localbase'
 
 const rotasAtivas = ref(0)
-const universitarios = ref(46) // exemplo fixo, pode puxar de outro banco
-const motoristas = ref(3) // podemos atualizar esse depois se quiser
+const universitarios = ref(46) // exemplo fixo
+const motoristas = ref(3) // exemplo fixo
 const horarioSaida = ref('16h')
+const usuario = ref(null) // usuário logado
 
-let db = new Localbase('db')
+let db = new Localbase('uniway-db')
 
 async function atualizarRotas() {
   const rotas = await db.collection('rotas').get()
@@ -15,7 +16,12 @@ async function atualizarRotas() {
 }
 
 onMounted(() => {
+  // Pega o usuário logado
+  const u = localStorage.getItem('usuarioLogado')
+  if (u) usuario.value = JSON.parse(u)
+
   atualizarRotas()
+
   window.addEventListener('rota-adicionada', atualizarRotas)
   window.addEventListener('rota-removida', atualizarRotas)
 })
@@ -30,7 +36,9 @@ onBeforeUnmount(() => {
   <div class="p-6 space-y-6">
     <!-- Boas-vindas -->
     <div>
-      <h1 class="text-3xl font-bold">Olá, Usuário</h1>
+      <h1 class="text-3xl font-bold">
+        Olá, {{ usuario ? usuario.nome : 'Usuário' }}
+      </h1>
       <p class="text-gray-600">Bem-vindo ao painel do UniWay!</p>
       <p class="text-sm text-gray-500 mt-2">
         {{ new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }} •
@@ -62,3 +70,5 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
+
+<style scoped></style>
