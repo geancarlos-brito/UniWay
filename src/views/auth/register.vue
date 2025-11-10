@@ -30,12 +30,11 @@
           <label class="label">Universidade</label>
           <select v-model="universidade" class="select select-bordered w-full">
             <option disabled value="">Selecione sua universidade...</option>
-            <option value="UNINASSAU">UNINASSAU</option>
-            <option value="UFDPar">UFDPar</option>
-            <option value="UFPI">UFPI</option>
-            <option value="UESPI">UESPI</option>
-            <option value="UNIP">UNIP</option>
-            <option value="IESVAP">IESVAP</option>
+            <option value="UNINASSAU">Centro Universitario Mauricio de Nassau (UNINASSAU)</option>
+            <option value="UFDPar">Universidade Federal do Delta do Parnaíba (UFDPar)</option>
+            <option value="UESPI">Universidade do Estado do Piauí (UESPI)</option>
+            <option value="UNIP">Universidade Paulista (UNIP)</option>
+            <option value="IESVAP">AFYA Faculdade de Ciências Médicas (IESVAP)</option>
           </select>
         </div>
 
