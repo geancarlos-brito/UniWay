@@ -114,7 +114,7 @@ const excluirTodas = async () => {
   if (confirm("Tem certeza que deseja excluir todas as rotas?")) {
     await DBService.limparColecao("rotas");
     rotas.value = [];
-    console.log("✅ Todas as rotas foram removidas.");
+    console.log("Todas as rotas foram removidas.");
   }
 };
 
@@ -137,7 +137,7 @@ const selecionarRota = async (rota, checked) => {
         console.log(`Rota selecionada! Restam ${rota.vagas} vagas.`);
       }
     } else {
-      alert("⚠️ Não há vagas disponíveis nesta rota!");
+      alert("Não há vagas disponíveis nesta rota!");
     }
   } else {
     if (rota.inscritos?.includes(usuarioId)) {

@@ -46,12 +46,8 @@
         />
 
         <div class="mt-4 flex gap-2">
-          <button class="btn btn-neutral" @click="salvarAlteracoes">
-            Salvar Alterações
-          </button>
-          <button class="btn" @click="voltar">
-            Cancelar
-          </button>
+          <button class="btn btn-neutral" @click="salvarAlteracoes">Salvar Alterações</button>
+          <button class="btn" @click="voltar">Cancelar</button>
         </div>
       </fieldset>
 
@@ -101,12 +97,13 @@ const carregarRota = async () => {
 // Salva as alterações no banco
 const salvarAlteracoes = async () => {
   try {
-    const atualizado = await DBService.atualizar("rotas", "id", rotaId, {
+    const atualizado = await DBService.atualizarRota("id", rotaId, {
       motorista: form.motorista,
       universidade: form.universidade,
       onibus: form.onibus,
       vagas: form.vagas,
     });
+
 
     if (atualizado) {
       toastVisible.value = true;

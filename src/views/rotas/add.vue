@@ -3,9 +3,7 @@
     <fieldset
       class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4"
     >
-      <legend class="fieldset-legend flex-1 mb-5 text-2xl">
-        Adicionando nova rota
-      </legend>
+      <legend class="fieldset-legend flex-1 mb-5 text-2xl">Adicionando nova rota</legend>
 
       <label class="label">Motorista</label>
       <input
@@ -39,9 +37,7 @@
         v-model="form.vagas"
       />
 
-      <button class="btn btn-neutral mt-4" @click="adicionarRota">
-        Adicionar
-      </button>
+      <button class="btn btn-neutral mt-4" @click="adicionarRota">Adicionar</button>
     </fieldset>
 
     <!-- Toast -->

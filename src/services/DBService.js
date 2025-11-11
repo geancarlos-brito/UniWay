@@ -5,7 +5,7 @@ class DBService {
     this.db = new Localbase(dbName);
   }
 
-  // === MÉTODOS DO USUÁRIO ===
+  // MÉTODOS DO USUÁRIO
 
   // Adiciona novo novo usuário
   async adicionar(colecao, dados) {
@@ -87,7 +87,7 @@ class DBService {
     }
   }
 
-  // Limpa toda a coleção (útil pra testes)
+  // Limpa toda a coleção
   async limparColecao(colecao) {
     try {
       await this.db.collection(colecao).delete();
@@ -99,7 +99,7 @@ class DBService {
     }
   }
 
-  // === MÉTODOS PARA ROTAS ===
+  // MÉTODOS PARA ROTAS
 
   async adicionarRota(rota) {
     try {
@@ -115,6 +115,25 @@ class DBService {
       return false;
     }
   }
+
+  async atualizarRota(campo, valor, novosDados) {
+  try {
+    const resultados = await this.db.collection("rotas").get();
+    const rota = resultados.find(item => item[campo] === valor);
+    if (!rota) {
+      console.warn("Rota não encontrada para atualização");
+      return false;
+    }
+    await this.db.collection("rotas").doc({ id: rota.id }).update(novosDados);
+    console.log("Rota atualizada:", novosDados);
+    window.dispatchEvent(new Event("rota-atualizada"));
+    return true;
+  } catch (error) {
+    console.error("Erro ao atualizar rota:", error);
+    return false;
+  }
+}
+
 
   async listarRotas() {
     try {
