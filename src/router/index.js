@@ -14,7 +14,7 @@ const router = createRouter({
         { path: '', name: 'rotas.index', component: () => import('@/views/rotas/index.vue')},
         { path: 'add', name: 'rotas.add', component: () => import('@/views/rotas/add.vue')},
         { path: ':id/edit', name: 'rotas.edit', component: () => import('@/views/rotas/edit.vue')},
-        { path: ':id/show', name: 'rotas.show',component: () => import('@/views/rotas/show.vue')},
+        { path: ':id/show', name: 'rotas.show', component: () => import('@/views/rotas/show.vue')},
       ]
     },
     {
