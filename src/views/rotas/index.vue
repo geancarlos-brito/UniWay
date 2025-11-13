@@ -71,11 +71,18 @@
                   {{ rota.vagas === 0 ? 'Esgotado' : rota.vagas }}
                 </span>
               </td>
-              <!-- Botão Editar só para administrador -->
-              <td v-if="tipoUsuario === 'Administrador'" class="flex items-center gap-4">
+              <td class="flex items-center gap-2">
+              <!-- Botões de administrador -->
+              <template v-if="tipoUsuario === 'Administrador'">
                 <button class="btn btn-sm" @click="editarRota(rota.id)">Editar</button>
                 <button class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none" @click="excluirRota(rota.id)">Excluir</button>
-              </td>
+                
+                <!-- Botão "Ver Alunos" visível para todos -->
+              <button 
+                class="btn btn-sm btn-info" 
+                @click="router.push({ name: 'rotas.show', params: { id: rota.id } })">Ver Alunos</button>
+              </template>
+            </td>
             </tr>
             <tr v-if="rotas.length === 0">
               <td :colspan="tipoUsuario === 'Administrador' ? 7 : 6" class="text-center text-gray-500 py-4">
