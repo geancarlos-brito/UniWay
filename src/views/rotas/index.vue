@@ -32,7 +32,7 @@
               <th>Universidade</th>
               <th>Ônibus</th>
               <th>Vagas</th>
-              <th v-if="tipoUsuario === 'Administrador'">Ações</th>
+              <th v-if="tipoUsuario === 'Administrador'" class="text-center w-36">Ações</th>
             </tr>
           </thead>
 
@@ -71,13 +71,12 @@
                   {{ rota.vagas === 0 ? 'Esgotado' : rota.vagas }}
                 </span>
               </td>
-
               <!-- Botão Editar só para administrador -->
-              <td v-if="tipoUsuario === 'Administrador'">
-                <button class="btn btn-sm btn-neutral" @click="editarRota(rota.id)">Editar</button>
+              <td v-if="tipoUsuario === 'Administrador'" class="flex items-center gap-4">
+                <button class="btn btn-sm" @click="editarRota(rota.id)">Editar</button>
+                <button class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none" @click="excluirRota(rota.id)">Excluir</button>
               </td>
             </tr>
-
             <tr v-if="rotas.length === 0">
               <td :colspan="tipoUsuario === 'Administrador' ? 7 : 6" class="text-center text-gray-500 py-4">
                 Nenhuma rota cadastrada ainda
@@ -121,6 +120,20 @@ const excluirTodas = async () => {
 // Editar rota (só administrador)
 const editarRota = (id) => {
   router.push(`/rotas/${id}/edit`);
+};
+
+// Excluir uma rota específica (só administrador)
+const excluirRota = async (id) => {
+  if (confirm("Tem certeza que deseja excluir esta rota?")) {
+    try {
+      await DBService.remover("rotas", "id", id);
+      rotas.value = rotas.value.filter((rota) => rota.id !== id);
+      console.log(`Rota #${id} excluída com sucesso.`);
+    } catch (error) {
+      console.error("Erro ao excluir rota:", error);
+      alert("Erro ao excluir rota!");
+    }
+  }
 };
 
 // Seleção automática de rota (só universitário)
