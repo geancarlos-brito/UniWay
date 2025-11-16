@@ -7,10 +7,9 @@ class DBService {
 
   // MÉTODOS DO USUÁRIO
 
-  // Adiciona novo novo usuário
   async adicionar(colecao, dados) {
     try {
-      const id = Date.now(); // ID único baseado no timestamp
+      const id = Date.now();
       await this.db.collection(colecao).add({ id, ...dados });
       console.log(`Item adicionado em ${colecao}:`, dados);
       return true;
@@ -20,7 +19,6 @@ class DBService {
     }
   }
 
-  // Lista todos os usuários registrados
   async listar(colecao) {
     try {
       return await this.db.collection(colecao).get();
@@ -30,7 +28,6 @@ class DBService {
     }
   }
 
-  // Busca um um usuário com base em um campo e valor
   async buscar(colecao, campo, valor) {
     try {
       const resultados = await this.db.collection(colecao).get();
@@ -42,7 +39,6 @@ class DBService {
     }
   }
 
-  // Atualiza usuário específico
   async atualizar(colecao, campo, valor, novosDados) {
     try {
       const resultados = await this.db.collection(colecao).get();
@@ -66,7 +62,6 @@ class DBService {
     }
   }
 
-  // Remove usuário
   async remover(colecao, campo, valor) {
     try {
       const resultados = await this.db.collection(colecao).get();
@@ -87,7 +82,6 @@ class DBService {
     }
   }
 
-  // Limpa toda a coleção
   async limparColecao(colecao) {
     try {
       await this.db.collection(colecao).delete();
@@ -106,9 +100,7 @@ class DBService {
       const id = Date.now();
       await this.db.collection("rotas").add({ id, ...rota });
       console.log("Rota adicionada:", rota);
-
       window.dispatchEvent(new Event("rota-adicionada"));
-
       return true;
     } catch (error) {
       console.error("Erro ao adicionar rota:", error);
@@ -117,23 +109,22 @@ class DBService {
   }
 
   async atualizarRota(campo, valor, novosDados) {
-  try {
-    const resultados = await this.db.collection("rotas").get();
-    const rota = resultados.find(item => item[campo] === valor);
-    if (!rota) {
-      console.warn("Rota não encontrada para atualização");
+    try {
+      const resultados = await this.db.collection("rotas").get();
+      const rota = resultados.find(item => item[campo] === valor);
+      if (!rota) {
+        console.warn("Rota não encontrada para atualização");
+        return false;
+      }
+      await this.db.collection("rotas").doc({ id: rota.id }).update(novosDados);
+      console.log("Rota atualizada:", novosDados);
+      window.dispatchEvent(new Event("rota-atualizada"));
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar rota:", error);
       return false;
     }
-    await this.db.collection("rotas").doc({ id: rota.id }).update(novosDados);
-    console.log("Rota atualizada:", novosDados);
-    window.dispatchEvent(new Event("rota-atualizada"));
-    return true;
-  } catch (error) {
-    console.error("Erro ao atualizar rota:", error);
-    return false;
   }
-}
-
 
   async listarRotas() {
     try {
@@ -148,12 +139,78 @@ class DBService {
     try {
       await this.db.collection("rotas").delete();
       console.log("Todas as rotas foram removidas com sucesso.");
-
       window.dispatchEvent(new Event("rota-removida"));
-      
       return true;
     } catch (error) {
       console.error("Erro ao excluir todas as rotas:", error);
+      return false;
+    }
+  }
+
+  // NOVOS MÉTODOS: gerenciar inscrições de universitários em rotas
+
+  async adicionarNaRota(rotaId, usuarioId) {
+    try {
+      const rotas = await this.listar("rotas");
+      const rota = rotas.find(r => r.id === rotaId);
+
+      if (!rota) {
+        console.warn("Rota não encontrada");
+        return false;
+      }
+
+      if (rota.vagas <= 0) {
+        console.warn("Vagas esgotadas");
+        return false;
+      }
+
+      const inscritos = rota.inscritos || [];
+      if (inscritos.includes(usuarioId)) {
+        console.warn("Usuário já inscrito nesta rota");
+        return false;
+      }
+
+      const novosDados = {
+        inscritos: [...inscritos, usuarioId],
+        vagas: rota.vagas - 1
+      };
+
+      await this.atualizar("rotas", "id", rotaId, novosDados);
+      console.log(`Usuário ${usuarioId} adicionado à rota ${rotaId}`);
+      return true;
+    } catch (error) {
+      console.error("Erro ao adicionar usuário na rota:", error);
+      return false;
+    }
+  }
+
+  async removerDaRota(rotaId, usuarioId) {
+    try {
+      const rotas = await this.listar("rotas");
+      const rota = rotas.find(r => r.id === rotaId);
+
+      if (!rota) {
+        console.warn("Rota não encontrada");
+        return false;
+      }
+
+      const inscritos = rota.inscritos || [];
+      if (!inscritos.includes(usuarioId)) {
+        console.warn("Usuário não está inscrito nesta rota");
+        return false;
+      }
+
+      const novosInscritos = inscritos.filter(id => id !== usuarioId);
+      const novosDados = {
+        inscritos: novosInscritos,
+        vagas: rota.vagas + 1
+      };
+
+      await this.atualizar("rotas", "id", rotaId, novosDados);
+      console.log(`Usuário ${usuarioId} removido da rota ${rotaId}`);
+      return true;
+    } catch (error) {
+      console.error("Erro ao remover usuário da rota:", error);
       return false;
     }
   }

@@ -17,14 +17,14 @@
           <thead>
             <tr class="bg-base-200 text-sm">
               <th>Nome</th>
-              <th>Tipo</th>
-              <th>Horário de Registro</th>
+              <th>Universidade</th>
+              <th>Horário de Inscrição</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="p in participantes" :key="p.id" class="hover:bg-base-100">
               <td class="font-medium">{{ p.nome }}</td>
-              <td class="text-sm text-gray-600">{{ p.tipo }}</td>
+              <td class="text-sm text-gray-600">{{ p.universidade || "Não informada" }}</td>
               <td class="text-sm">{{ formatTimestamp(p.horario_registro) }}</td>
             </tr>
           </tbody>
@@ -40,27 +40,46 @@ import { useRoute } from "vue-router";
 import DBService from "@/services/DBService";
 
 const route = useRoute();
-const rotaId = route.params.id;
+const rotaId = Number(route.params.id);
 
 const participantes = ref([]);
 const loading = ref(true);
 
 onMounted(async () => {
   loading.value = true;
-
   try {
+    // Busca a rota
     const rotas = await DBService.listar("rotas");
-    const rota = rotas.find(r => r.id === Number(rotaId));
+    const rota = rotas.find(r => r.id === rotaId);
 
-    if (rota?.inscritos?.length > 0) {
-      participantes.value = rota.inscritos.map((id, index) => ({
-        id: index + 1,
-        nome: `Participante #${id}`,
-        tipo: "Universitário",
-        horario_registro: new Date().toISOString()
-      }));
-    } else {
+    if (!rota?.inscritos?.length) {
       participantes.value = [];
+    } else {
+      // Busca todos os usuários de uma vez
+      const todosUsuarios = await DBService.listar("usuarios"); // ou "universitarios"
+
+      // Cria um mapa para acesso rápido por ID
+      const usuarioPorId = {};
+      todosUsuarios.forEach(u => {
+        usuarioPorId[u.id] = u;
+      });
+
+      // Mapeia inscritos para dados reais
+      participantes.value = rota.inscritos
+        .map(idUsuario => {
+          const usuario = usuarioPorId[idUsuario];
+          if (!usuario) return null;
+
+          return {
+            id: usuario.id,
+            nome: usuario.nome || "Nome não informado",
+            universidade: usuario.universidade, // ✅ campo de universidade
+            // Se quiser usar a data de inscrição na rota, precisaríamos salvar isso na rota.
+            // Por enquanto, usamos a data de cadastro do usuário como fallback.
+            horario_registro: usuario.data_criacao || new Date().toISOString()
+          };
+        })
+        .filter(Boolean);
     }
   } catch (e) {
     console.error("Erro ao buscar participantes:", e);
@@ -75,8 +94,8 @@ function formatTimestamp(timestamp) {
   try {
     const d = new Date(timestamp);
     return d.toLocaleString("pt-BR", {
-      day: "2-digit", month: "2-digit", year: "numeric",
-      hour: "2-digit", minute: "2-digit"
+      hour: "2-digit",
+      minute: "2-digit"
     });
   } catch {
     return timestamp;

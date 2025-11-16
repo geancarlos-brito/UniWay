@@ -12,7 +12,6 @@
         <div class="flex justify-between items-center mb-5">
           <div class="text-2xl font-semibold">Rotas Universitárias</div>
 
-          <!-- Botão Excluir só para administrador -->
           <div class="flex gap-2" v-if="tipoUsuario === 'Administrador'">
             <button
               class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none"
@@ -38,7 +37,6 @@
 
           <tbody>
             <tr v-for="rota in rotas" :key="rota.id">
-              <!-- Checkbox só para universitário -->
               <th v-if="tipoUsuario === 'Universitário'">
                 <label>
                   <input 
@@ -72,17 +70,17 @@
                 </span>
               </td>
               <td class="flex items-center gap-2">
-              <!-- Botões de administrador -->
-              <template v-if="tipoUsuario === 'Administrador'">
-                <button class="btn btn-sm" @click="editarRota(rota.id)">Editar</button>
-                <button class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none" @click="excluirRota(rota.id)">Excluir</button>
-                
-                <!-- Botão "Ver Alunos" visível para todos -->
-              <button 
-                class="btn btn-sm btn-info" 
-                @click="router.push({ name: 'rotas.show', params: { id: rota.id } })">Ver Alunos</button>
-              </template>
-            </td>
+                <template v-if="tipoUsuario === 'Administrador'">
+                  <button class="btn btn-sm" @click="editarRota(rota.id)">Editar</button>
+                  <button class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none" @click="excluirRota(rota.id)">Excluir</button>
+                </template>
+                <button 
+                  class="btn btn-sm btn-info" 
+                  @click="router.push({ name: 'rotas.show', params: { id: rota.id } })"
+                >
+                  Ver Alunos
+                </button>
+              </td>
             </tr>
             <tr v-if="rotas.length === 0">
               <td :colspan="tipoUsuario === 'Administrador' ? 7 : 6" class="text-center text-gray-500 py-4">
@@ -105,17 +103,14 @@ import DBService from "@/services/DBService";
 const router = useRouter();
 const rotas = ref([]);
 
-// Usuário logado
 const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
 const usuarioId = usuarioLogado?.id;
 const tipoUsuario = usuarioLogado?.tipo;
 
-// Captura todas as rotas
 const capturarRotas = async () => {
   rotas.value = await DBService.listar("rotas");
 };
 
-// Excluir todas as rotas (só administrador)
 const excluirTodas = async () => {
   if (confirm("Tem certeza que deseja excluir todas as rotas?")) {
     await DBService.limparColecao("rotas");
@@ -124,12 +119,10 @@ const excluirTodas = async () => {
   }
 };
 
-// Editar rota (só administrador)
 const editarRota = (id) => {
   router.push(`/rotas/${id}/edit`);
 };
 
-// Excluir uma rota específica (só administrador)
 const excluirRota = async (id) => {
   if (confirm("Tem certeza que deseja excluir esta rota?")) {
     try {
@@ -143,28 +136,31 @@ const excluirRota = async (id) => {
   }
 };
 
-// Seleção automática de rota (só universitário)
 const selecionarRota = async (rota, checked) => {
   if (tipoUsuario !== 'Universitário') return;
 
   if (checked) {
-    if (rota.vagas > 0) {
-      if (!rota.inscritos) rota.inscritos = [];
-      if (!rota.inscritos.includes(usuarioId)) {
-        rota.inscritos.push(usuarioId);
-        rota.vagas -= 1;
-        await DBService.atualizar("rotas", "id", rota.id, rota);
-        console.log(`Rota selecionada! Restam ${rota.vagas} vagas.`);
+    const sucesso = await DBService.adicionarNaRota(rota.id, usuarioId);
+    if (sucesso) {
+      const rotaRef = rotas.value.find(r => r.id === rota.id);
+      if (rotaRef) {
+        rotaRef.vagas -= 1;
+        if (!rotaRef.inscritos) rotaRef.inscritos = [];
+        rotaRef.inscritos.push(usuarioId);
       }
     } else {
-      alert("Não há vagas disponíveis nesta rota!");
+      alert("Não foi possível se inscrever nesta rota (vagas esgotadas ou já inscrito).");
     }
   } else {
-    if (rota.inscritos?.includes(usuarioId)) {
-      rota.inscritos = rota.inscritos.filter(id => id !== usuarioId);
-      rota.vagas += 1;
-      await DBService.atualizar("rotas", "id", rota.id, rota);
-      console.log(`Rota desmarcada! Restam ${rota.vagas} vagas.`);
+    const sucesso = await DBService.removerDaRota(rota.id, usuarioId);
+    if (sucesso) {
+      const rotaRef = rotas.value.find(r => r.id === rota.id);
+      if (rotaRef) {
+        rotaRef.vagas += 1;
+        rotaRef.inscritos = rotaRef.inscritos?.filter(id => id !== usuarioId) || [];
+      }
+    } else {
+      alert("Não foi possível cancelar sua inscrição.");
     }
   }
 };
