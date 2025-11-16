@@ -72,7 +72,7 @@
               <td class="flex items-center gap-2">
                 <template v-if="tipoUsuario === 'Administrador'">
                   <button class="btn btn-sm" @click="editarRota(rota.id)">Editar</button>
-                  <button class="btn btn-sm bg-red-600 hover:bg-gray-700 text-white border-none" @click="excluirRota(rota.id)">Excluir</button>
+                  <button class="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-none" @click="excluirRota(rota.id)">Excluir</button>
                 </template>
                 <button 
                   class="btn btn-sm btn-info" 

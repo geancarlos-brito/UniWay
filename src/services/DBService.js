@@ -147,7 +147,7 @@ class DBService {
     }
   }
 
-  // NOVOS MÉTODOS: gerenciar inscrições de universitários em rotas
+  // inscrições de universitários em rotas
 
   async adicionarNaRota(rotaId, usuarioId) {
     try {
