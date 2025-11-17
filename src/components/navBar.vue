@@ -30,7 +30,7 @@
         <router-link to="/login" class="btn btn-sm btn-outline">
           Login
         </router-link>
-        <router-link to="/register" class="btn btn-sm btn-primary">
+        <router-link to="/register" class="btn btn-sm btn-warning">
           Criar Conta
         </router-link>
       </template>
