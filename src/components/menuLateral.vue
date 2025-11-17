@@ -1,20 +1,47 @@
 <template>
-  <div class="mx-3">
-    <ul class="menu bg-base-200 rounded-box w-56">
-      <!-- Se não estiver logado -->
-      <template v-if="!usuario">
-        <li><router-link :to="{ name: 'register'}">Criar conta</router-link></li>
-        <li><router-link :to="{ name: 'login'}">Fazer Login</router-link></li>
-      </template>
+  <!-- Só aparece se o usuário estiver logado -->
+  <div class="mx-3" v-if="usuario">
+    <ul class="menu bg-base-100 shadow-md rounded-xl w-60 p-3 gap-1">
 
-      <!-- Se estiver logado -->
-      <template v-else>
-        <li><router-link :to="{ name: 'rotas.index'}">Lista de Rotas</router-link></li>
-        <!-- Adicionar rota apenas para Administrador -->
-        <li v-if="usuario.tipo === 'Administrador'">
-          <router-link :to="{ name: 'rotas.add'}">Adicionar Rota</router-link>
-        </li>
-      </template>
+      <li class="menu-title text-base">
+        <span>Menu</span>
+      </li>
+
+      <!-- Lista de rotas -->
+      <li>
+        <router-link 
+          :to="{ name: 'rotas.index' }"
+          class="hover:bg-base-200 rounded-lg"
+        >
+          <i class="bi bi-map mr-2"></i>
+          Lista de Rotas
+        </router-link>
+      </li>
+
+      <!-- Apenas Admin -->
+      <li v-if="usuario.tipo === 'Administrador'">
+        <router-link 
+          :to="{ name: 'rotas.add' }"
+          class="hover:bg-base-200 rounded-lg"
+        >
+          <i class="bi bi-plus-lg mr-2"></i>
+          Adicionar Rota
+        </router-link>
+      </li>
+
+      <div class="divider my-2"></div>
+
+      <!-- Logout -->
+      <li>
+        <button 
+          @click="sair" 
+          class="hover:bg-red-200 text-red-600 rounded-lg"
+        >
+          <i class="bi bi-box-arrow-left mr-2"></i>
+          Sair
+        </button>
+      </li>
+
     </ul>
   </div>
 </template>
@@ -32,4 +59,4 @@ function sair() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>
