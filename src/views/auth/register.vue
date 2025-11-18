@@ -1,55 +1,124 @@
 <template>
-  <div class="min-h-screen bg-base-200 flex items-center justify-center">
-    <div class="card w-96 bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h1 class="card-title text-center mb-4 text-2xl font-bold">
-          Criar Conta
-        </h1>
+  <div class="min-h-screen bg-gradient-to-br from-base-200 to-base-300 flex items-center justify-center p-4">
+    <div class="card w-full max-w-md bg-base-100 shadow-xl rounded-2xl p-8 animate-fade flex flex-col items-center">
 
-        <label class="label">Nome completo</label>
-        <input v-model="nome" type="text" class="input input-bordered w-full" placeholder="Digite seu nome" />
+      <!-- LOGO -->
+      <div class="flex flex-col items-center mb-6">
+        <img src="@/assets/images/logo.png" class="w-70 h-34 object-contain mb-1" />
+        <h1 class="text-3xl font-bold">Criar Conta</h1>
+        <p class="text-sm opacity-70">Preencha seus dados para continuar</p>
+      </div>
+      <div class="w-full max-w-xs flex flex-col gap-4">
 
-        <label class="label mt-2">E-mail</label>
-        <input v-model="email" type="email" class="input input-bordered w-full" placeholder="Digite seu email" />
+        <!-- Nome -->
+        <div class="form-control">
+          <label class="label justify-center pb-1">
+            <span class="label-text">Nome completo</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 w-full justify-center">
+            <i class="ri-user-line text-lg opacity-70"></i>
+            <input
+              type="text"
+              v-model="nome"
+              placeholder="Seu nome"
+              class="text-center bg-transparent w-full focus:outline-none"
+            />
+          </div>
+        </div>
 
-        <label class="label mt-2">Senha</label>
-        <input v-model="senha" type="password" class="input input-bordered w-full" placeholder="Crie uma senha" />
+        <!-- E-mail -->
+        <div class="form-control">
+          <label class="label justify-center pb-1">
+            <span class="label-text">E-mail</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 w-full justify-center">
+            <i class="ri-mail-line text-lg opacity-70"></i>
+            <input
+              type="email"
+              v-model="email"
+              placeholder="Seu e-mail"
+              class="text-center bg-transparent w-full focus:outline-none"
+            />
+          </div>
+        </div>
 
-        <label class="label mt-2">Confirme sua senha</label>
-        <input v-model="confirmarSenha" type="password" class="input input-bordered w-full" placeholder="Confirme sua senha" />
+        <!-- Senha -->
+        <div class="form-control">
+          <label class="label justify-center pb-1">
+            <span class="label-text">Senha</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 w-full justify-center">
+            <i class="ri-lock-2-line text-lg opacity-70"></i>
+            <input
+              type="password"
+              v-model="senha"
+              placeholder="Crie uma senha"
+              class="text-center bg-transparent w-full focus:outline-none"
+            />
+          </div>
+        </div>
 
-        <label class="label mt-2">Tipo de usuário</label>
-        <select v-model="tipo" class="select select-bordered w-full">
-          <option disabled value="">Selecione...</option>
-          <option value="Universitário">Universitário</option>
-          <option value="Motorista">Motorista</option>
-          <option value="Administrador">Administrador</option>
-        </select>
+        <!-- Confirmar senha -->
+        <div class="form-control">
+          <label class="label justify-center pb-1">
+            <span class="label-text">Confirmar senha</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 w-full justify-center">
+            <i class="ri-lock-password-line text-lg opacity-70"></i>
+            <input
+              type="password"
+              v-model="confirmarSenha"
+              placeholder="Repita a senha"
+              class="text-center bg-transparent w-full focus:outline-none"
+            />
+          </div>
+        </div>
 
-        <div v-if="tipo === 'Universitário'" class="mt-2">
-          <label class="label">Universidade</label>
-          <select v-model="universidade" class="select select-bordered w-full">
-            <option disabled value="">Selecione sua universidade...</option>
-            <option value="UNINASSAU">Centro Universitario Mauricio de Nassau (UNINASSAU)</option>
-            <option value="UFDPar">Universidade Federal do Delta do Parnaíba (UFDPar)</option>
-            <option value="UESPI">Universidade do Estado do Piauí (UESPI)</option>
-            <option value="UNIP">Universidade Paulista (UNIP)</option>
-            <option value="IESVAP">AFYA Faculdade de Ciências Médicas (IESVAP)</option>
+        <!-- Tipo de usuário -->
+        <div class="form-control">
+          <label class="label justify-center pb-1">
+            <span class="label-text">Tipo de usuário</span>
+          </label>
+          <select v-model="tipo" class="select select-bordered w-full text-center">
+            <option disabled value="">Selecione...</option>
+            <option value="Universitário">Universitário</option>
+            <option value="Motorista">Motorista</option>
+            <option value="Administrador">Administrador</option>
           </select>
         </div>
 
-        <div class="mt-4">
-          <button class="btn btn-warning w-full font-bold" @click="registrar">Registrar</button>
+        <!-- Universidade (condicional) -->
+        <div v-if="tipo === 'Universitário'" class="form-control">
+          <label class="label justify-center pb-1">
+            <span class="label-text">Universidade</span>
+          </label>
+          <select v-model="universidade" class="select select-bordered w-full text-center">
+            <option disabled value="">Selecione sua universidade</option>
+            <option value="UNINASSAU">UNINASSAU</option>
+            <option value="UFDPar">UFDPar</option>
+            <option value="UESPI">UESPI</option>
+            <option value="UNIP">UNIP</option>
+            <option value="IESVAP">AFYA - IESVAP</option>
+          </select>
         </div>
-
-        <p class="text-sm text-center mt-4 text-gray-500">
-          Já tem uma conta?
-          <RouterLink to="/login" class="link link-hover text-black">Fazer login</RouterLink>
-        </p>
       </div>
+
+      <!-- Botão Registrar -->
+      <button class="btn btn-warning w-full max-w-xs font-bold mt-6 shadow-md" @click="registrar">
+        Registrar
+      </button>
+
+      <!-- Link Login -->
+      <p class="text-sm text-center mt-4 opacity-70">
+        Já tem uma conta?
+        <RouterLink to="/login" class="link link-hover font-semibold text-gray-900">
+          Fazer login
+        </RouterLink>
+      </p>
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref } from "vue";
@@ -65,10 +134,8 @@ const confirmarSenha = ref("");
 const tipo = ref("");
 const universidade = ref("");
 
-const emailValido = (email) => {
-  const dominiosPermitidos = ["@gmail.com", "@hotmail.com", "@outlook.com", "@yahoo.com"];
-  return dominiosPermitidos.some((dominio) => email.endsWith(dominio));
-};
+const dominios = ["@gmail.com", "@hotmail.com", "@outlook.com", "@yahoo.com"];
+const emailValido = (e) => dominios.some((d) => e.endsWith(d));
 
 const registrar = async () => {
   if (!nome.value || !email.value || !senha.value || !tipo.value) {
@@ -91,10 +158,10 @@ const registrar = async () => {
     return;
   }
 
-  // Evita duplicação
   const usuarios = await DBService.listar("usuarios");
-  const emailExistente = usuarios.find((u) => u.email === email.value);
-  if (emailExistente) {
+  const existente = usuarios.find((u) => u.email === email.value);
+
+  if (existente) {
     alert("E-mail já cadastrado!");
     return;
   }
@@ -108,6 +175,7 @@ const registrar = async () => {
   };
 
   const sucesso = await DBService.adicionar("usuarios", novoUsuario);
+  
   if (sucesso) {
     loginAuth(novoUsuario);
     alert("Usuário cadastrado com sucesso!");
@@ -117,3 +185,13 @@ const registrar = async () => {
   }
 };
 </script>
+
+<style>
+.animate-fade {
+  animation: fade .35s ease-out;
+}
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

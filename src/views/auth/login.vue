@@ -1,38 +1,79 @@
 <template>
-  <div class="min-h-screen bg-base-200 flex items-center justify-center">
-    <div class="card w-96 bg-base-100 shadow-xl">
-      <div class="card-body">
-        <h1 class="card-title text-center mb-4 text-2xl font-bold">UniWay Login</h1>
+  <div class="min-h-screen bg-gradient-to-br from-base-200 to-base-300 flex items-center justify-center p-4">
+    <div class="card w-full max-w-md bg-base-100 shadow-xl rounded-2xl p-8 animate-fade flex flex-col items-center">
 
-        <div class="flex justify-center mb-4 gap-2">
-          <button
-            v-for="tipo in tipos"
-            :key="tipo"
-            @click="tipoUsuario = tipo"
-            :class="['btn w-28 font-semibold', tipoUsuario === tipo ? 'btn-warning' : 'btn-outline']"
-          >
-            {{ tipo }}
-          </button>
-        </div>
-
-        <label class="label">E-mail</label>
-        <input v-model="email" type="email" class="input input-bordered w-full" placeholder="Digite seu email" />
-
-        <label class="label mt-2">Senha</label>
-        <input v-model="senha" type="password" class="input input-bordered w-full" placeholder="Digite sua senha" />
-
-        <div class="mt-4">
-          <button class="btn btn-warning w-full font-bold" @click="login">Entrar</button>
-        </div>
-
-        <p class="text-sm text-center mt-4 text-gray-500">
-          Esqueceu sua senha?
-          <a href="#" class="link link-hover text-black">Recuperar</a>
-        </p>
+      <!-- LOGO -->
+      <div class="flex flex-col items-center mb-6">
+        <img src="@/assets/images/logo.png" class="w-70 h-34 object-contain mb-1" />
+        <p class="text-sm opacity-70">Faça login para continuar</p>
       </div>
+
+      <!-- Tipos -->
+      <div class="flex justify-center mb-6 gap-3">
+        <button
+          v-for="tipo in tipos"
+          :key="tipo"
+          @click="tipoUsuario = tipo"
+          :class="[
+            'btn w-28 font-semibold transition-all',
+            tipoUsuario === tipo
+              ? 'btn-warning shadow-md scale-105'
+              : 'btn-outline'
+          ]"
+        >
+          {{ tipo }}
+        </button>
+      </div>
+
+      <!-- Campos centralizados -->
+      <div class="w-full max-w-xs flex flex-col gap-4"> <!-- ⬅️ Limita largura e centraliza visualmente -->
+        <!-- E-mail -->
+        <div class="form-control">
+          <label class="label justify-center pb-1">
+            <span class="label-text">E-mail</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 w-full justify-center">
+            <i class="ri-mail-line text-lg opacity-60"></i>
+            <input
+              type="email"
+              v-model="email"
+              placeholder="Seu email"
+              class="text-center bg-transparent w-full focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- Senha -->
+        <div class="form-control">
+          <label class="label justify-center pb-1">
+            <span class="label-text">Senha</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 w-full justify-center">
+            <i class="ri-lock-2-line text-lg opacity-60"></i>
+            <input
+              type="password"
+              v-model="senha"
+              placeholder="Sua senha"
+              class="text-center bg-transparent w-full focus:outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Botão Entrar -->
+      <button class="btn btn-warning w-full max-w-xs font-bold mt-6 shadow-md" @click="login">
+        Entrar
+      </button>
+
+      <!-- Link Recuperar senha -->
+      <p class="text-sm text-center mt-4 opacity-70">
+        Esqueceu sua senha?
+        <a class="link link-hover font-bold text-black">Recuperar</a>
+      </p>
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref } from "vue";
@@ -75,3 +116,13 @@ const login = async () => {
   }
 };
 </script>
+
+<style>
+.animate-fade {
+  animation: fade .35s ease-out;
+}
+@keyframes fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
