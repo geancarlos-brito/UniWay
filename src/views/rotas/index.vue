@@ -136,34 +136,54 @@ const excluirRota = async (id) => {
   }
 };
 
-const selecionarRota = async (rota, checked) => {
+const selecionarRota = async (rotaSelecionada, checked) => {
   if (tipoUsuario !== 'Universitário') return;
 
+  const rotaAtual = rotas.value.find(r => r.inscritos?.includes(usuarioId));
   if (checked) {
-    const sucesso = await DBService.adicionarNaRota(rota.id, usuarioId);
-    if (sucesso) {
-      const rotaRef = rotas.value.find(r => r.id === rota.id);
-      if (rotaRef) {
-        rotaRef.vagas -= 1;
-        if (!rotaRef.inscritos) rotaRef.inscritos = [];
-        rotaRef.inscritos.push(usuarioId);
+    if (rotaAtual && rotaAtual.id !== rotaSelecionada.id) {
+      const confirmar = confirm(
+        "Você já está inscrito em outra rota. Deseja trocar para esta?"
+      );
+      if (!confirmar) return;
+
+      const removeu = await DBService.removerDaRota(rotaAtual.id, usuarioId);
+      if (removeu) {
+        rotaAtual.vagas += 1;
+        rotaAtual.inscritos = rotaAtual.inscritos.filter(id => id !== usuarioId);
       }
-    } else {
-      alert("Não foi possível se inscrever nesta rota (vagas esgotadas ou já inscrito).");
+
+      const adicionou = await DBService.adicionarNaRota(rotaSelecionada.id, usuarioId);
+      if (adicionou) {
+        rotaSelecionada.vagas -= 1;
+        if (!rotaSelecionada.inscritos) rotaSelecionada.inscritos = [];
+        rotaSelecionada.inscritos.push(usuarioId);
+      }
+
+      return;
     }
-  } else {
-    const sucesso = await DBService.removerDaRota(rota.id, usuarioId);
+
+    const sucesso = await DBService.adicionarNaRota(rotaSelecionada.id, usuarioId);
     if (sucesso) {
-      const rotaRef = rotas.value.find(r => r.id === rota.id);
-      if (rotaRef) {
-        rotaRef.vagas += 1;
-        rotaRef.inscritos = rotaRef.inscritos?.filter(id => id !== usuarioId) || [];
-      }
+      rotaSelecionada.vagas -= 1;
+      if (!rotaSelecionada.inscritos) rotaSelecionada.inscritos = [];
+      rotaSelecionada.inscritos.push(usuarioId);
+    } else {
+      alert("Não foi possível se inscrever nesta rota.");
+    }
+  }
+
+  else {
+    const sucesso = await DBService.removerDaRota(rotaSelecionada.id, usuarioId);
+    if (sucesso) {
+      rotaSelecionada.vagas += 1;
+      rotaSelecionada.inscritos = rotaSelecionada.inscritos?.filter(id => id !== usuarioId) || [];
     } else {
       alert("Não foi possível cancelar sua inscrição.");
     }
   }
 };
+
 
 onMounted(() => {
   capturarRotas();

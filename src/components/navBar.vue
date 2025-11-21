@@ -54,7 +54,7 @@
         </div>
 
         <!-- Botão Sair -->
-        <button class="btn btn-sm bg-red-600" @click="sair">
+        <button class="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-none" @click="sair">
           Sair
         </button>
 
