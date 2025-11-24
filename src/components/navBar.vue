@@ -1,7 +1,5 @@
 <template>
   <div class="navbar bg-base-200 shadow-md px-4">
-
-    <!-- Botão do menu lateral -->
     <div class="flex-none">
       <button 
         class="btn btn-ghost btn-square hover:bg-base-300 transition"
@@ -15,17 +13,14 @@
       </button>
     </div>
 
-    <!-- NOME DO SISTEMA -->
     <div class="flex-1">
       <a class="text-xl font-semibold tracking-wide ml-3">
         UniWay • Chaval-CE
       </a>
     </div>
 
-    <!-- AÇÕES (Login / Registrar / Usuário / Logout) -->
     <div class="flex-none flex items-center gap-3">
 
-      <!-- Se NÃO estiver logado -->
       <template v-if="!usuario">
         <router-link to="/login" class="btn btn-sm btn-outline">
           Login
@@ -35,10 +30,8 @@
         </router-link>
       </template>
 
-      <!-- Se ESTIVER logado -->
       <template v-else>
 
-        <!-- Avatar + Nome -->
         <div class="flex items-center gap-2 px-3 py-1 bg-base-300 rounded-lg shadow-inner">
           <div class="avatar placeholder">
             <div class="bg-primary text-primary-content rounded-full w-10">
@@ -53,13 +46,8 @@
           </span>
         </div>
 
-        <!-- Botão Sair -->
-        <button class="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-none" @click="sair">
-          Sair
-        </button>
-
+        <button class="btn btn-sm bg-red-600 hover:bg-red-700 text-white border-none" @click="sair"> Sair </button>
       </template>
-
     </div>
   </div>
 </template>

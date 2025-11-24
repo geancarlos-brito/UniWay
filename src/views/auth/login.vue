@@ -2,13 +2,11 @@
   <div class="min-h-screen bg-gradient-to-br from-base-200 to-base-300 flex items-center justify-center p-4">
     <div class="card w-full max-w-md bg-base-100 shadow-xl rounded-2xl p-8 animate-fade flex flex-col items-center">
 
-      <!-- LOGO -->
       <div class="flex flex-col items-center mb-6">
         <img src="@/assets/images/logo.png" class="w-70 h-34 object-contain mb-1" />
         <p class="text-sm opacity-70">Faça login para continuar</p>
       </div>
 
-      <!-- Tipos -->
       <div class="flex justify-center mb-6 gap-3">
         <button
           v-for="tipo in tipos"
@@ -25,9 +23,7 @@
         </button>
       </div>
 
-      <!-- Campos centralizados -->
-      <div class="w-full max-w-xs flex flex-col gap-4"> <!-- ⬅️ Limita largura e centraliza visualmente -->
-        <!-- E-mail -->
+      <div class="w-full max-w-xs flex flex-col gap-4">
         <div class="form-control">
           <label class="label justify-center pb-1">
             <span class="label-text">E-mail</span>
@@ -43,7 +39,6 @@
           </div>
         </div>
 
-        <!-- Senha -->
         <div class="form-control">
           <label class="label justify-center pb-1">
             <span class="label-text">Senha</span>
@@ -60,12 +55,10 @@
         </div>
       </div>
 
-      <!-- Botão Entrar -->
       <button class="btn btn-warning w-full max-w-xs font-bold mt-6 shadow-md" @click="login">
         Entrar
       </button>
 
-      <!-- Link Recuperar senha -->
       <p class="text-sm text-center mt-4 opacity-70">
         Esqueceu sua senha?
         <a class="link link-hover font-bold text-black">Recuperar</a>

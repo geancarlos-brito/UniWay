@@ -40,7 +40,6 @@
       <button class="btn btn-neutral mt-4" @click="adicionarRota">Adicionar</button>
     </fieldset>
 
-    <!-- Toast -->
     <div class="toast" v-if="toastVisible">
       <div class="alert alert-info">
         <span>Rota adicionada com sucesso!</span>
@@ -66,18 +65,15 @@ const form = reactive({
 
 const adicionarRota = async () => {
   try {
-    // Usa o serviço centralizado
     await DBService.adicionarRota({ ...form });
 
     toastVisible.value = true;
     console.log("✅ Rota adicionada com sucesso!");
 
-    // Redireciona após adicionar
     setTimeout(() => {
       router.push("/rotas");
     }, 1000);
 
-    // Limpa o formulário
     Object.keys(form).forEach((key) => (form[key] = ""));
   } catch (error) {
     console.error("Erro ao adicionar rota:", error);

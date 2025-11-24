@@ -1,5 +1,4 @@
 <template>
-  <!-- Só aparece se o usuário estiver logado -->
   <div class="mx-3" v-if="usuario">
     <ul class="menu bg-base-100 shadow-md rounded-xl w-60 p-3 gap-1">
 
@@ -7,7 +6,6 @@
         <span>Menu</span>
       </li>
 
-      <!-- Lista de rotas -->
       <li>
         <router-link 
           :to="{ name: 'rotas.index' }"
@@ -18,7 +16,6 @@
         </router-link>
       </li>
 
-      <!-- Apenas Admin -->
       <li v-if="usuario.tipo === 'Administrador'">
         <router-link 
           :to="{ name: 'rotas.add' }"

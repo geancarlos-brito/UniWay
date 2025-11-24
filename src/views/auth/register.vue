@@ -2,7 +2,6 @@
   <div class="min-h-screen bg-gradient-to-br from-base-200 to-base-300 flex items-center justify-center p-4">
     <div class="card w-full max-w-md bg-base-100 shadow-xl rounded-2xl p-8 animate-fade flex flex-col items-center">
 
-      <!-- LOGO -->
       <div class="flex flex-col items-center mb-6">
         <img src="@/assets/images/logo.png" class="w-70 h-34 object-contain mb-1" />
         <h1 class="text-3xl font-bold">Criar Conta</h1>
@@ -10,7 +9,6 @@
       </div>
       <div class="w-full max-w-xs flex flex-col gap-4">
 
-        <!-- Nome -->
         <div class="form-control">
           <label class="label justify-center pb-1">
             <span class="label-text">Nome completo</span>
@@ -26,7 +24,6 @@
           </div>
         </div>
 
-        <!-- E-mail -->
         <div class="form-control">
           <label class="label justify-center pb-1">
             <span class="label-text">E-mail</span>
@@ -42,7 +39,6 @@
           </div>
         </div>
 
-        <!-- Senha -->
         <div class="form-control">
           <label class="label justify-center pb-1">
             <span class="label-text">Senha</span>
@@ -58,7 +54,6 @@
           </div>
         </div>
 
-        <!-- Confirmar senha -->
         <div class="form-control">
           <label class="label justify-center pb-1">
             <span class="label-text">Confirmar senha</span>
@@ -74,7 +69,6 @@
           </div>
         </div>
 
-        <!-- Tipo de usuário -->
         <div class="form-control">
           <label class="label justify-center pb-1">
             <span class="label-text">Tipo de usuário</span>
@@ -87,7 +81,6 @@
           </select>
         </div>
 
-        <!-- Universidade (condicional) -->
         <div v-if="tipo === 'Universitário'" class="form-control">
           <label class="label justify-center pb-1">
             <span class="label-text">Universidade</span>
@@ -103,12 +96,10 @@
         </div>
       </div>
 
-      <!-- Botão Registrar -->
       <button class="btn btn-warning w-full max-w-xs font-bold mt-6 shadow-md" @click="registrar">
         Registrar
       </button>
 
-      <!-- Link Login -->
       <p class="text-sm text-center mt-4 opacity-70">
         Já tem uma conta?
         <RouterLink to="/login" class="link link-hover font-semibold text-gray-900">

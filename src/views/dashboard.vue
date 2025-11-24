@@ -5,24 +5,22 @@ import Localbase from 'localbase'
 const rotasAtivas = ref(0)
 const motoristas = ref(0)
 const horarioSaida = ref('16h')
-const usuario = ref(null) // usuário logado
+const usuario = ref(null)
 
 let db = new Localbase('uniway-db')
 
-// Atualiza rotas
 async function atualizarRotas() {
   const rotas = await db.collection('rotas').get()
   rotasAtivas.value = rotas.length
 }
 
-// Atualiza motoristas a partir de usuários do tipo "motorista"
+// Busca os motoristas registrados no sistema
 async function atualizarMotoristas() {
   const todosUsuarios = await db.collection('usuarios').get()
   motoristas.value = todosUsuarios.filter(u => u.tipo?.toLowerCase() === 'motorista').length
 }
 
 onMounted(() => {
-  // Pega o usuário logado
   const u = localStorage.getItem('usuarioLogado')
   if (u) usuario.value = JSON.parse(u)
 

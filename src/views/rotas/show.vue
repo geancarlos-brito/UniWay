@@ -55,7 +55,6 @@ onMounted(async () => {
     if (!rota?.inscritos?.length) {
       participantes.value = [];
     } else {
-      // Busca todos os usuários de uma vez
       const todosUsuarios = await DBService.listar("usuarios"); // ou "universitarios"
 
       // Cria um mapa para acesso rápido por ID
@@ -64,7 +63,6 @@ onMounted(async () => {
         usuarioPorId[u.id] = u;
       });
 
-      // Mapeia inscritos para dados reais
       participantes.value = rota.inscritos
         .map(idUsuario => {
           const usuario = usuarioPorId[idUsuario];
@@ -73,9 +71,7 @@ onMounted(async () => {
           return {
             id: usuario.id,
             nome: usuario.nome || "Nome não informado",
-            universidade: usuario.universidade, // ✅ campo de universidade
-            // Se quiser usar a data de inscrição na rota, precisaríamos salvar isso na rota.
-            // Por enquanto, usamos a data de cadastro do usuário como fallback.
+            universidade: usuario.universidade,
             horario_registro: usuario.data_criacao || new Date().toISOString()
           };
         })

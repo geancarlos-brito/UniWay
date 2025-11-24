@@ -80,7 +80,6 @@ const form = reactive({
 
 const rotaId = Number(route.params.id);
 
-// Carrega os dados da rota selecionada
 const carregarRota = async () => {
   const rotas = await DBService.listar("rotas");
   const rota = rotas.find((r) => r.id === rotaId);
@@ -94,7 +93,6 @@ const carregarRota = async () => {
   Object.assign(form, rota);
 };
 
-// Salva as alterações no banco
 const salvarAlteracoes = async () => {
   try {
     const atualizado = await DBService.atualizarRota("id", rotaId, {

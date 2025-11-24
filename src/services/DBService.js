@@ -147,8 +147,6 @@ class DBService {
     }
   }
 
-  // inscrições de universitários em rotas
-
   async adicionarNaRota(rotaId, usuarioId) {
     try {
       const rotas = await this.listar("rotas");
